@@ -5,6 +5,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { RouletteService } from './roulette.service';
 
 @Controller('roulettes')
 export class RouletteController {
