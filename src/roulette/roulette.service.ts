@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { RedisService } from 'nestjs-redis';
 import { v4 as uuidV4 } from 'uuid';
 import { COLOR_BET_RATE, NUMBER_BET_RATE } from './constants';
+import { BetColor } from './enums/bet-color.enum';
 import { BetType } from './enums/bet-type.enum';
 import { RouletteStatus } from './enums/roulette-status.enum';
 import { AddBet } from './interfaces/add-bet.interface';
@@ -76,6 +77,30 @@ export class RouletteService {
       roulette.id,
       JSON.stringify({ ...roulette, status: RouletteStatus.open }),
     );
+  }
+
+  async setRouletteClose(rouletteId: string): Promise<BetResult[]> {
+    const redisClient = this.redisService.getClient();
+    const roulette = await this.findById(rouletteId);
+    if (roulette.status === RouletteStatus.closed) {
+      throw new Error('The roulette is already closed');
+    }
+    const rouletteNumber = Math.floor(Math.random() * 36);
+    const rouletteColor =
+      rouletteNumber % 2 === 0 ? BetColor.Red : BetColor.Black;
+    const rouletteBets = await redisClient.hgetall(
+      `roulettes/${rouletteId}/bets`,
+    );
+    const betResults = Object.keys(rouletteBets).map(userId =>
+      this.mapUserBet({
+        rouletteBets,
+        rouletteNumber,
+        rouletteColor,
+        userId,
+      }),
+    );
+
+    return betResults;
   }
 
   async addBet(params: AddBet): Promise<void> {
