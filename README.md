@@ -41,7 +41,7 @@ Send a `POST` request to `/roulettes`.
 
 Send a `PATCH` request to `/roulettes/:id`.
 
-- Request's body:
+- Response's body:
 
 ```json
 {
@@ -77,28 +77,30 @@ Send a `PATCH` request to `/roulettes/:id/close`.
 {
   "color": "red",
   "number": 24,
-  "colorGamblers": [
+  "gamblers": [
     {
-      "id": "2dd6119c-f8ed-4a35-b073-9b407b32314d",
-      "betResult": "win",
+      "userId": "2dd6119c-f8ed-4a35-b073-9b407b32314d",
+      "betType": "color",
+      "hasWon": true,
       "amount": 15480
     },
     {
-      "id": "2dd6119c-f8ed-4a35-b073-9b407b32314d",
-      "betResult": "lose",
+      "userId": "2dd6119c-f8ed-4a35-b073-9b407b32314d",
+      "betType": "number",
+      "hasWon": true,
+      "amount": 43000
+    },
+    {
+      "userId": "2dd6119c-f8ed-4a35-b073-9b407b32314d",
+      "betType": "number",
+      "hasWon": false,
       "amount": 8600
     },
     {
-      "id": "2dd6119c-f8ed-4a35-b073-9b407b32314d",
-      "betResult": "win",
+      "userId": "2dd6119c-f8ed-4a35-b073-9b407b32314d",
+      "betType": "color",
+      "hasWon": true,
       "amount": 15480
-    }
-  ],
-  "numberGamblers": [
-    {
-      "id": "2dd6119c-f8ed-4a35-b073-9b407b32314d",
-      "betResult": "win",
-      "amount": 43000
     }
   ]
 }
@@ -123,4 +125,17 @@ Send a `GET` request to `/roulettes`.
     }
   ]
 }
+```
+
+## Test
+
+```bash
+# unit tests
+$ npm run test
+
+# e2e tests
+$ npm run test:e2e
+
+# test coverage
+$ npm run test:cov
 ```
