@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RedisService } from 'nestjs-redis';
+import { v4 as uuidV4 } from 'uuid';
+import { RouletteStatus } from './enums/roulette-status.enum';
 import { Roulette } from './interfaces/roulette.interface';
 
 @Injectable()
@@ -24,4 +26,16 @@ export class RouletteService {
 
     return roulette;
   }
+
+  async create(): Promise<Roulette> {
+    const roulette: Roulette = {
+      id: uuidV4(),
+      status: RouletteStatus.closed,
+    };
+    const redisClient = this.redisService.getClient();
+    await redisClient.hset('roulettes', roulette.id, JSON.stringify(roulette));
+
+    return roulette;
+  }
+
 }
