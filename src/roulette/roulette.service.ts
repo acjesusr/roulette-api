@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { RedisService } from 'nestjs-redis';
 import { v4 as uuidV4 } from 'uuid';
 import { RouletteStatus } from './enums/roulette-status.enum';
+import { AddBet } from './interfaces/add-bet.interface';
 import { Roulette } from './interfaces/roulette.interface';
 
 @Injectable()
@@ -51,4 +52,17 @@ export class RouletteService {
     );
   }
 
+  async addBet(params: AddBet): Promise<void> {
+    const { rouletteId, userId, bet } = params;
+    const redisClient = this.redisService.getClient();
+    const roulette = await this.findById(rouletteId);
+    if (roulette.status === RouletteStatus.closed) {
+      throw new Error('The roulette is not open for bets');
+    }
+    await redisClient.hset(
+      `roulettes/${rouletteId}/bets`,
+      userId,
+      JSON.stringify(bet),
+    );
+  }
 }
