@@ -7,6 +7,7 @@ import { BetType } from './enums/bet-type.enum';
 import { RouletteStatus } from './enums/roulette-status.enum';
 import { AddBet } from './interfaces/add-bet.interface';
 import { BetResult } from './interfaces/bet-result.interface';
+import { CloseRouletteResult } from './interfaces/close-roulette-result.interface';
 import { MapUserBet } from './interfaces/map-user-bet.interface';
 import { Roulette } from './interfaces/roulette.interface';
 
@@ -79,7 +80,7 @@ export class RouletteService {
     );
   }
 
-  async setRouletteClose(rouletteId: string): Promise<BetResult[]> {
+  async setRouletteClose(rouletteId: string): Promise<CloseRouletteResult> {
     const redisClient = this.redisService.getClient();
     const roulette = await this.findById(rouletteId);
     if (roulette.status === RouletteStatus.closed) {
@@ -100,7 +101,13 @@ export class RouletteService {
       }),
     );
 
-    return betResults;
+    await redisClient.del(`roulettes/${rouletteId}/bets`);
+
+    return {
+      gamblers: betResults,
+      number: rouletteNumber,
+      color: rouletteColor,
+    };
   }
 
   async addBet(params: AddBet): Promise<void> {
