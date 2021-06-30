@@ -17,6 +17,7 @@ import { RouletteModule } from './roulette/roulette.module';
       }),
       inject: [ConfigService],
     }),
+    RouletteModule,
   ],
   controllers: [AppController],
 })
