@@ -38,4 +38,17 @@ export class RouletteService {
     return roulette;
   }
 
+  async setRouletteOpen(rouletteId: string): Promise<void> {
+    const redisClient = this.redisService.getClient();
+    const roulette = await this.findById(rouletteId);
+    if (roulette.status === RouletteStatus.open) {
+      throw new Error('The roulette is already open');
+    }
+    await redisClient.hset(
+      'roulettes',
+      roulette.id,
+      JSON.stringify({ ...roulette, status: RouletteStatus.open }),
+    );
+  }
+
 }
