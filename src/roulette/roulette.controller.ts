@@ -71,4 +71,20 @@ export class RouletteController {
       };
     }
   }
+
+  @Patch(':id/close')
+  async closeRoulette(@Param('id') rouletteId: string): Promise<any> {
+    try {
+      const result = await this.rouletteService.setRouletteClose(rouletteId);
+
+      return {
+        ...result,
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        error,
+      };
+    }
+  }
 }
