@@ -1,13 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { RedisService } from 'nestjs-redis';
 import { v4 as uuidV4 } from 'uuid';
+import { COLOR_BET_RATE, NUMBER_BET_RATE } from './constants';
+import { BetType } from './enums/bet-type.enum';
 import { RouletteStatus } from './enums/roulette-status.enum';
 import { AddBet } from './interfaces/add-bet.interface';
+import { BetResult } from './interfaces/bet-result.interface';
+import { MapUserBet } from './interfaces/map-user-bet.interface';
 import { Roulette } from './interfaces/roulette.interface';
 
 @Injectable()
 export class RouletteService {
   constructor(private readonly redisService: RedisService) {}
+
+  private mapUserBet(params: MapUserBet): BetResult {
+    const { rouletteBets, rouletteNumber, rouletteColor, userId } = params;
+    const userBet = JSON.parse(rouletteBets[userId]);
+    if (userBet.type === BetType.Number) {
+      const hasWon = userBet.number === rouletteNumber;
+      return {
+        userId,
+        betType: BetType.Number,
+        hasWon,
+        amount: hasWon ? userBet.amount * NUMBER_BET_RATE : userBet.amount,
+      };
+    } else {
+      const hasWon = userBet.color === rouletteColor;
+      return {
+        userId,
+        betType: BetType.Color,
+        hasWon,
+        amount: hasWon ? userBet.amount * COLOR_BET_RATE : userBet.amount,
+      };
+    }
+  }
 
   async findAll(): Promise<Roulette[]> {
     const redisClient = this.redisService.getClient();
