@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
 } from '@nestjs/common';
 
 @Controller('roulettes')
@@ -16,4 +17,12 @@ export class RouletteController {
     };
   }
 
+  @Post()
+  async createRoulette(): Promise<any> {
+    const roulette = await this.rouletteService.create();
+
+    return {
+      rouletteId: roulette.id,
+    };
+  }
 }
