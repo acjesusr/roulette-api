@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  Param,
+  Patch,
   Post,
 } from '@nestjs/common';
 
@@ -24,5 +26,21 @@ export class RouletteController {
     return {
       rouletteId: roulette.id,
     };
+  }
+
+  @Patch(':id')
+  async openRoulette(@Param('id') rouletteId: string): Promise<any> {
+    try {
+      await this.rouletteService.setRouletteOpen(rouletteId);
+
+      return {
+        status: 'success',
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        error,
+      };
+    }
   }
 }
