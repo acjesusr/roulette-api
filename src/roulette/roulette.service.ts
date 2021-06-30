@@ -15,4 +15,13 @@ export class RouletteService {
 
     return roulettes;
   }
+
+  async findById(id: string): Promise<Roulette> {
+    const redisClient = this.redisService.getClient();
+    const roulette: Roulette = JSON.parse(
+      await redisClient.hget('roulettes', id),
+    );
+
+    return roulette;
+  }
 }
